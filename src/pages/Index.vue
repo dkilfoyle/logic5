@@ -32,12 +32,12 @@
               <pane
                 ><div class="rightPanels">
                   <dock-tabs name="rightTop">
-                    <tab-panel name="red" isSelected
+                    <tab-panel name="red" icon="window" isSelected
                       ><div class="mypanel">
                         <h2>My red panel</h2>
                       </div></tab-panel
                     >
-                    <tab-panel name="blue"
+                    <tab-panel name="blue" icon="window"
                       ><div class="mypanel">
                         <h2>My blue panel</h2>
                       </div></tab-panel
@@ -48,7 +48,7 @@
               <pane
                 ><div class="rightPanels">
                   <dock-tabs name="rightBottom">
-                    <tab-panel name="green" isSelected
+                    <tab-panel name="green" icon="window" isSelected
                       ><div class="mypanel">
                         <h2>My green panel</h2>
                       </div></tab-panel

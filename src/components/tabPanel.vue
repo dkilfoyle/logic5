@@ -23,11 +23,7 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    prefix: {
-      type: String,
-      default: '',
-    },
-    suffix: {
+    icon: {
       type: String,
       default: '',
     },
@@ -58,7 +54,7 @@ export default defineComponent({
     onBeforeMount(() => {
       addTab(tabsProvider.name, {
         name: props.name,
-        icon: '',
+        icon: props.icon,
         label: props.name,
         isDisabled: props.isDisabled,
       });

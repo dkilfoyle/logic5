@@ -1,6 +1,10 @@
 <template>
   <div class="tab-container">
-    <div class="tabs" :id="name + '_tabs'" @drop="onDrop($event)" @dragover.prevent @dragenter.prevent>
+    <div class="tabs" :id="name + '_tabs'" 
+      @drop="onDrop($event)"
+      @dragover.prevent
+      @dragenter.prevent="onDragEnter($event)"
+      @dragleave.prevent="onDragLeave($event)">
       <div
         v-for="(tab,i) in getTabs(name)"
         :key="tab.name"
@@ -14,7 +18,9 @@
         ]"
         draggable="true"
       >
+        <q-icon v-if="tab.icon" :name="tab.icon" class="q-mr-xs tab-icon-left"></q-icon>
         {{ tab.label }}
+        <q-icon name="close" font-size="16pt" class="q-ml-sm tab-icon-right"></q-icon>
       </div>
     </div>
     <div class="tab-panels" :id="name">
@@ -90,6 +96,7 @@ export default defineComponent({
       } as DragDropAction;
       doDragDrop(dragDropAction);
 
+      target.classList.remove('drag-over')
       setSelectedTab(state.name, dropData.tabName);
     };
 
@@ -105,18 +112,32 @@ export default defineComponent({
       console.log('onStartDrag', tabName)
     }
 
+    const onDragEnter = (e:DragEvent) => {
+      const element = e.target as HTMLElement;
+      element.classList.add('drag-over')
+    }
+
+    const onDragLeave = (e:DragEvent) => {
+      const element = e.target as HTMLElement;
+      element.classList.remove('drag-over')
+    }
+
     // provide tabProvider.state.name to each tab
     provide('tabsProvider', state);
 
     return {
       ...toRefs(state),
+      
+      onDragStart,
+      onDragEnter,
+      onDragLeave,
       onDrop,
+
       getTab,
       getTabs,
       setSelectedTab,
       getSelectedTab,
       tabBarNames,
-      onDragStart,
       onTabClick
     };
   },
@@ -141,19 +162,33 @@ export default defineComponent({
 
 .tab {
   background-color: #ececec;
-  color: rgba(51, 51, 51, 0.7);
-  min-width: 75px;
+  color: rgba(82, 82, 82, 0.658);
   cursor: pointer;
   display: flex;
   align-items: center;
-  padding-left: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
   white-space: nowrap;
   height: 100%;
+  border-right:1px solid white;
 }
 
 .tab-active {
   background-color: white;
   color: rgb(51, 51, 51);
+  border-top:2px solid #00b1fb;
+}
+
+.tab-icon-left {
+  color: rgb(92, 187, 92)
+}
+
+.tab > .tab-icon-right {
+  color: transparent;
+}
+
+.tab-active > .tab-icon-right {
+  color: black;
 }
 
 .tab-panels {
@@ -164,5 +199,9 @@ export default defineComponent({
 
 .tab-panel {
   height: 100%;
+}
+
+.drag-over {
+  background-color:#add8e691;
 }
 </style>
