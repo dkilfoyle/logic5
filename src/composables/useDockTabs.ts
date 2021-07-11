@@ -7,10 +7,11 @@ export interface TabInterface {
   isDisabled: boolean
 }
 
-export interface DragResultInterface {
-  removedIndex: number,
-  addedIndex: number,
-  payload: TabInterface
+export interface DragDropAction {
+  sourceTabsId: string,
+  sourceTabIndex: number,
+  targetTabsId: string,
+  targetTabIndex: number
 }
 
 const state = reactive({
@@ -37,8 +38,11 @@ export default ()=> {
     return null;
   }
   const getTabs = (tabBarId: string) => {
-    return state.tabBars[tabBarId]?.tabs
+    if (!state.tabBars[tabBarId]) console.log(`getTabs(${tabBarId}): invalid tabBarId`);
+    return state.tabBars[tabBarId]?.tabs || [];
   }
+
+  const getState = () => state;
 
   const setSelectedTab = (tabBarId: string, tabId: string):void => {
     state.tabBars[tabBarId].selected = tabId;
@@ -58,19 +62,13 @@ export default ()=> {
     return '';
   }
 
-  const doDragDrop = (tabBarId:string, dragResult: DragResultInterface):void => {
-    const { removedIndex, addedIndex, payload } = dragResult;
-    console.log('doDragDrop: ', tabBarId, removedIndex, addedIndex, payload);
-    if (removedIndex === null && addedIndex === null) return;
-    const result = state.tabBars[tabBarId].tabs;
-    let itemToAdd = payload;
-
-    if (removedIndex !== null) {
-      itemToAdd = result.splice(removedIndex, 1)[0];
-    }
-    if (addedIndex !== null) {
-      result.splice(addedIndex, 0, itemToAdd);
-    }
+  const doDragDrop = (dropResult: DragDropAction):void => {
+    const { sourceTabsId, sourceTabIndex, targetTabsId, targetTabIndex } = dropResult;
+    console.log('doDragDrop: ', dropResult);
+    const targetTabs = getTabs(targetTabsId);
+    const sourceTabs = getTabs(sourceTabsId);
+    const itemToAdd = sourceTabs.splice(sourceTabIndex, 1)[0];
+    targetTabs.splice(targetTabIndex, 0, itemToAdd);
   };
 
   return {
@@ -82,6 +80,7 @@ export default ()=> {
     isSelectedTab,
     getTabBarId,
     doDragDrop,
-    tabBarNames
+    tabBarNames,
+    getState
   }
 };

@@ -31,7 +31,7 @@
             <splitpanes horizontal>
               <pane
                 ><div class="rightPanels">
-                  <tab-bar name="rightTop">
+                  <dock-tabs name="rightTop">
                     <tab-panel name="red" isSelected
                       ><div class="mypanel">
                         <h2>My red panel</h2>
@@ -42,18 +42,18 @@
                         <h2>My blue panel</h2>
                       </div></tab-panel
                     >
-                  </tab-bar>
+                  </dock-tabs>
                 </div></pane
               >
               <pane
                 ><div class="rightPanels">
-                  <tab-bar name="rightBottom">
+                  <dock-tabs name="rightBottom">
                     <tab-panel name="green" isSelected
                       ><div class="mypanel">
                         <h2>My green panel</h2>
                       </div></tab-panel
                     >
-                  </tab-bar>
+                  </dock-tabs>
                 </div></pane
               >
             </splitpanes>
@@ -69,14 +69,15 @@
 import { defineComponent, ref, computed } from 'vue';
 import { Splitpanes, Pane } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
-import tabBar from '../components/tabBar.vue';
+// import tabBar from '../components/tabBar.vue';
+import dockTabs from '../components/dockTabs.vue';
 import tabPanel from '../components/tabPanel.vue';
 import useWindowResize from './useWindowResize';
 
 export default defineComponent({
   name: 'PageIndex',
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  components: { Splitpanes, Pane, tabBar, tabPanel },
+  components: { Splitpanes, Pane, dockTabs, tabPanel },
   setup() {
     const { width } = useWindowResize();
 
