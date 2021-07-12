@@ -27,6 +27,10 @@ export default defineComponent({
       type: String,
       default: '',
     },
+    label: {
+      type: String,
+      default: '',
+    },
     isDisabled: {
       type: Boolean,
       default: false,
@@ -55,7 +59,7 @@ export default defineComponent({
       addTab(tabsProvider.name, {
         name: props.name,
         icon: props.icon,
-        label: props.name,
+        label: props.label || props.name,
         isDisabled: props.isDisabled,
       });
       if (props.isSelected) setSelectedTab(tabsProvider.name, props.name);

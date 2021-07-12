@@ -18,5 +18,5 @@ export default function useWindowResize() {
     window.removeEventListener('resize', resize);
   });
 
-  return { height, width };
+  return { windowHeight:height, windowWidth:width };
 }
