@@ -18,5 +18,8 @@ export default function useWindowResize() {
     window.removeEventListener('resize', resize);
   });
 
-  return { windowHeight:height, windowWidth:width };
+  const widthPixelsToPercent = (x:number) => x / width.value * 100;
+  const heightPixelsToPercent = (x:number) => x / height.value * 100;
+
+  return { windowHeight:height, windowWidth:width, widthPixelsToPercent, heightPixelsToPercent };
 }

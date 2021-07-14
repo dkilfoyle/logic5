@@ -2,13 +2,15 @@
   <q-page class="column">
     <div class="row items-stretch" style="flex: 1">
       <div class="col">
-        <dock-split>
-          <template #a>
-           <side-bar></side-bar>
+        <dock-split name="d0" :default-size="20" min-size="48px">
+          <template v-slot:a="splitprops">
+            <dock-sidebar
+              @collapse="splitprops.collapsePane('a')"
+            ></dock-sidebar>
           </template>
-          <template #b>
-            <dock-split>
-              <template #a>
+          <template v-slot:b>
+            <dock-split name="d1" min-size="48px" collapse-bar>
+              <template v-slot:a>
                 <dock-tabs name="middleTop">
                   <dock-panel name="yello" icon="window" isSelected
                     ><div class="mypanel">
@@ -22,7 +24,7 @@
                   >
                 </dock-tabs>
               </template>
-              <template #b>
+              <template v-slot:b>
                 <dock-tabs name="rightTop">
                   <dock-panel name="red" icon="window" isSelected
                     ><div class="mypanel">
@@ -46,27 +48,28 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, ref } from 'vue';
 
 // import tabBar from '../components/tabBar.vue';
 import dockTabs from '../components/dockTabs.vue';
 import dockPanel from '../components/dockPanel.vue';
 import dockSplit from '../components/dockSplit.vue';
-import sideBar from '../components/sideBar.vue';
+import dockSidebar from '../components/dockSidebar.vue';
 
 export default defineComponent({
   name: 'PageIndex',
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  components: { dockTabs, dockPanel, dockSplit, sideBar },
+  components: { dockTabs, dockPanel, dockSplit, dockSidebar },
   setup() {
     const leftTab = ref('mails');
-    const onLeftTabClick = (x: string) => {
-      console.log('leftClick', x);
+
+    const onCollapse = (x: string) => {
+      console.log('collapse', x);
     };
 
     return {
       leftTab,
-      onLeftTabClick,
+      onCollapse,
     };
   },
 });

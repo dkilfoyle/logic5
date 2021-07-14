@@ -1,12 +1,36 @@
 <template>
-  <splitpanes :horiztonal="direction == 'horizontal'" @resize="onResize">
-    <pane :size="sizes[0]" :min-size="minSizePercent">
-      <slot name="a" style="height:100%"></slot>
-    </pane>
-    <pane :size="sizes[1]" :min-size="minSizePercent">
-      <slot name="b"></slot>
-    </pane>
-  </splitpanes>
+  <q-splitter
+    v-model="size"
+    ref="resizeRef"
+    emit-immediately
+    :horiztonal="direction == 'horizontal'"
+    :limits="limits"
+    unit="%"
+    style="height: 100%"
+  >
+    <template #before>
+      <div v-show="size <= limits[0] && collapseBar">
+        <slot name="a_collapsed">
+          <div
+            style="background-color: darkgrey; width: 100%; height: 100%"
+          ></div>
+        </slot>
+      </div>
+      <div v-show="!(size <= limits[0] && collapseBar)" style="height: 100%">
+        <slot name="a" :collapsePane="collapsePane"></slot>
+      </div>
+    </template>
+    <template #after>
+      <div v-show="size >= limits[1]">
+        <slot name="b_collapsed">
+          <div style="background-color: darkgrey"></div>
+        </slot>
+      </div>
+      <div style="height: 100%">
+        <slot name="b" :collapsePane="collapsePane"></slot>
+      </div>
+    </template>
+  </q-splitter>
 </template>
 
 <script lang="ts">
@@ -16,88 +40,113 @@ import {
   reactive,
   computed,
   toRefs,
-  PropType,
+  onMounted,
+  onBeforeUnmount,
+  watchEffect,
+  ComponentPublicInstance,
 } from 'vue';
-import useWindowResize from '../composables/useWindowResize';
-import { Splitpanes, Pane } from 'splitpanes';
-import 'splitpanes/dist/splitpanes.css';
+import { QSplitter } from 'quasar';
 
 export default defineComponent({
   props: {
-    // name: {
-    //   required: true,
-    //   type: String,
-    // },
+    name: {
+      required: true,
+      type: String,
+    },
     direction: {
       type: String,
       default: 'vertical',
     },
-    sizes: {
-      type: Array as PropType<Array<number>>,
-      default: () => [50, 50],
+    defaultSize: {
+      type: Number,
+      default: 50,
+    },
+    minSize: {
+      type: String,
+      default: '0%',
     },
     collapsed: {
       type: Array,
       default: () => [false, false],
     },
-    minSize: {
-      type: Number,
-      default: 48,
+    collapseBar: {
+      type: Boolean,
+      default: false,
     },
   },
-  components: { Splitpanes, Pane },
 
   setup(props) {
     const state = reactive({
       ...toRefs(props),
-      // sizes: props.sizes,
-      oldSizes: props.sizes,
+      size: ref(props.defaultSize),
+      oldSize: ref(props.defaultSize),
+      minSizePercent: ref(0),
+      clientWidth: ref(10000),
+      clientHeight: ref(10000),
     });
 
-    const { windowWidth, windowHeight } = useWindowResize();
+    const resizeRef = ref<ComponentPublicInstance<typeof QSplitter>>();
 
-    const not = (x: number) => (x == 0 ? 1 : 0);
+    const observer = new ResizeObserver((entries) => {
+      // called initially and on resize
+      entries.forEach((entry) => {
+        state.clientWidth = entry.contentRect.width;
+        state.clientHeight = entry.contentRect.height;
+      });
+    });
 
-    const collapsePanel = (x: number) => {
-      state.sizes[not(x)] += state.sizes[x];
-      state.sizes[x] = 0;
-    };
-    const expandPanel = (x: number) => {
-      state.sizes[x] = state.oldSizes[x];
-      state.sizes[not(x)] = state.oldSizes[not(x)];
-    };
+    onMounted(() => {
+      // set initial dimensions right before observing: Element.getBoundingClientRect()
+      if (resizeRef.value && resizeRef.value.$el) {
+        const el = resizeRef.value.$el as HTMLElement;
+        state.clientWidth = el.clientWidth;
+        state.clientHeight = el.clientHeight;
+        observer.observe(resizeRef.value.$el as Element);
+      } else throw new Error('dockSplit.onMounted invalid resizeRef');
+      watchEffect(() => {
+        console.log(
+          `${state.name}: [${limits.value[0]}, ${state.size}, ${limits.value[1]}], ${state.clientWidth}`
+        );
+      });
+    });
 
-    // const onLeftTabClick = (tabName: string) => {
-    //   if (leftTab.value == tabName) {
-    //     // click current tab
-    //     if (panelSizes.value[0] == 0) expandPanel(0);
-    //     else collapsePanel(0);
-    //   } else {
-    //     // click a new tab
-    //     if (panelSizes.value[0] == 0) expandPanel(0);
-    //   }
-    // };
-
-    const onResize = (e: { size: number }[]) => {
-      state.sizes = [e[0].size, e[1].size];
-      state.oldSizes = [e[0].size, e[1].size];
-    };
+    onBeforeUnmount(() => {
+      if (resizeRef.value && resizeRef.value.$el)
+        observer.unobserve(resizeRef.value.$el as Element);
+    });
 
     const minSizePercent = computed(() => {
-      if (state.direction == 'vertical')
-        return windowWidth && windowWidth.value
-          ? (state.minSize / windowWidth.value) * 100
-          : 10;
-      else
-        return windowHeight && windowHeight.value
-          ? (state.minSize / windowHeight.value) * 100
-          : 10;
+      if (state.minSize.includes('%'))
+        return parseInt(state.minSize.replace('%', ''));
+      const pixels = parseInt(state.minSize.replace('px', ''));
+      return state.direction == 'vertical'
+        ? Math.ceil((pixels / state.clientWidth) * 100)
+        : Math.ceil((pixels / state.clientHeight) * 100);
     });
+
+    const collapsePane = (x: string) => {
+      state.oldSize = state.size;
+      if (x == 'a') state.size = minSizePercent.value;
+      else state.size = 100 - minSizePercent.value;
+    };
+    const expandPanes = () => {
+      state.size = state.oldSize;
+    };
+    // const togglePane = (x: number) => {
+    //   if (state.size == state.minSize) expandPane(x); else collapsePane(x);
+    // }
+
+    const limits = computed(() => [
+      minSizePercent.value,
+      100 - minSizePercent.value,
+    ]);
 
     return {
       ...toRefs(state),
-      minSizePercent,
-      onResize,
+      collapsePane,
+      expandPanes,
+      limits,
+      resizeRef,
     };
   },
 });

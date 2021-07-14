@@ -1,14 +1,19 @@
 <template>
-  <div class="row items-stretch" style="flex: 1">
+  <div class="row items-stretch" style="height: 100%; flex: 1">
     <div class="col-auto">
-      <q-tabs v-model="leftTab" vertical switch-indicator class="sidebar-tabs">
-        <q-tab name="mails" icon="mail" @click="onLeftTabClick('mails')" />
-        <q-tab name="alarms" icon="alarm" @click="onLeftTabClick('alarms')" />
-        <q-tab name="movies" icon="movie" @click="onLeftTabClick('movies')" />
+      <q-tabs
+        v-model="selectedTab"
+        vertical
+        switch-indicator
+        class="sidebar-tabs"
+      >
+        <q-tab name="mails" icon="mail" @click="onTabClick('mails')" />
+        <q-tab name="alarms" icon="alarm" @click="onTabClick('alarms')" />
+        <q-tab name="movies" icon="movie" @click="onTabClick('movies')" />
       </q-tabs>
     </div>
     <div class="col">
-      <q-tab-panels v-model="leftTab" class="sidebar-panels">
+      <q-tab-panels v-model="selectedTab" class="sidebar-panels">
         <q-tab-panel name="mails"
           ><div class="sidebar-panel">Mails</div>
         </q-tab-panel>
@@ -29,17 +34,20 @@ import { defineComponent, ref } from 'vue';
 export default defineComponent({
   name: 'PageIndex',
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  setup() {
-    const leftTab = ref('mails');
-    const onLeftTabClick = (x: string) => {
-      console.log('leftClick', x);
+  setup(props, { emit }) {
+    const selectedTab = ref('mails');
+
+    const onTabClick = (x: string) => {
+      if (x == selectedTab.value) emit('collapse');
+      else emit('expand');
     };
 
     return {
-      leftTab,
-      onLeftTabClick,
+      selectedTab,
+      onTabClick,
     };
   },
+  emits: ['collapse', 'expand'],
 });
 </script>
 

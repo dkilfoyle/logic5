@@ -1,14 +1,17 @@
 <template>
   <div class="tab-container">
-    <div class="tabs" :id="name + '_tabs'" 
+    <div
+      class="tabs"
+      :id="name + '_tabs'"
       @drop="onDrop($event)"
       @dragover.prevent
       @dragenter.prevent="onDragEnter($event)"
-      @dragleave.prevent="onDragLeave($event)">
+      @dragleave.prevent="onDragLeave($event)"
+    >
       <div
-        v-for="(tab,i) in getTabs(name)"
+        v-for="(tab, i) in getTabs(name)"
         :key="tab.name"
-        :id="tab.name +'_tab'"
+        :id="tab.name + '_tab'"
         @click.prevent="onTabClick(tab.name)"
         @dragstart="onDragStart($event, tab.name, i)"
         :class="[
@@ -18,9 +21,17 @@
         ]"
         draggable="true"
       >
-        <q-icon v-if="tab.icon" :name="tab.icon" class="q-mr-xs tab-icon-left"></q-icon>
+        <q-icon
+          v-if="tab.icon"
+          :name="tab.icon"
+          class="q-mr-xs tab-icon-left"
+        ></q-icon>
         {{ tab.label }}
-        <q-icon name="close" font-size="16pt" class="q-ml-sm tab-icon-right"></q-icon>
+        <q-icon
+          name="close"
+          font-size="16pt"
+          class="q-ml-sm tab-icon-right"
+        ></q-icon>
       </div>
     </div>
     <div class="tab-panels" :id="name">
@@ -34,9 +45,9 @@ import { defineComponent, reactive, provide, toRefs } from 'vue';
 import useDockTabs, { DragDropAction } from '../composables/useDockTabs';
 
 interface DropData {
-  tabName: string,
-  tabsName: string,
-  index: number
+  tabName: string;
+  tabsName: string;
+  index: number;
 }
 
 export default defineComponent({
@@ -47,7 +58,7 @@ export default defineComponent({
     },
   },
 
-  emits: ['changed', 'clicked'],
+  emits: ['changed', 'clicked', 'collapse'],
 
   setup(props) {
     const state = reactive({
@@ -61,28 +72,32 @@ export default defineComponent({
       setSelectedTab,
       getSelectedTab,
       tabBarNames,
-      getState
     } = useDockTabs();
 
     const onTabClick = (tabName: string) => {
-      setSelectedTab(state.name, tabName)
-    }
+      setSelectedTab(state.name, tabName);
+    };
 
-    const onDrop = (e:DragEvent) => {
-      const dropData = JSON.parse(e.dataTransfer?.getData('dropData') || '') as DropData;
+    const onDrop = (e: DragEvent) => {
+      const dropData = JSON.parse(
+        e.dataTransfer?.getData('dropData') || ''
+      ) as DropData;
       const target = e.target as HTMLElement;
-      console.log('dropping onto: ', target.id, target.className)
+      console.log('dropping onto: ', target.id, target.className);
 
       // addedIndex depends on whether drop target was tabs contained or existing tab
       let addedIndex: number;
       if (target.classList.contains('tabs')) {
         // dropped onto tabs
-        addedIndex = getTabs(target.id.replace('_tabs','')).length;
+        addedIndex = getTabs(target.id.replace('_tabs', '')).length;
       } else if (target.classList.contains('tab')) {
         const parent = target.parentElement;
-        if (!(parent && parent.className == 'tabs')) throw new Error('parent element is not tabs')
-        const targetTabs= getTabs(parent.id);
-        const targetIndex = targetTabs.findIndex(x => x.name + '_tab' == target.id);
+        if (!(parent && parent.className == 'tabs'))
+          throw new Error('parent element is not tabs');
+        const targetTabs = getTabs(parent.id);
+        const targetIndex = targetTabs.findIndex(
+          (x) => x.name + '_tab' == target.id
+        );
         addedIndex = targetIndex;
       } else {
         return;
@@ -96,38 +111,40 @@ export default defineComponent({
       } as DragDropAction;
       doDragDrop(dragDropAction);
 
-      target.classList.remove('drag-over')
+      target.classList.remove('drag-over');
       setSelectedTab(state.name, dropData.tabName);
     };
 
-    const onDragStart = (e:DragEvent, tabName: string, index: number) => {
-
+    const onDragStart = (e: DragEvent, tabName: string, index: number) => {
       setSelectedTab(state.name, tabName);
 
       if (e.dataTransfer) {
         e.dataTransfer.dropEffect = 'move';
         e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('dropData', JSON.stringify({tabName, tabsName: state.name, index}));
+        e.dataTransfer.setData(
+          'dropData',
+          JSON.stringify({ tabName, tabsName: state.name, index })
+        );
       }
-      console.log('onStartDrag', tabName)
-    }
+      console.log('onStartDrag', tabName);
+    };
 
-    const onDragEnter = (e:DragEvent) => {
+    const onDragEnter = (e: DragEvent) => {
       const element = e.target as HTMLElement;
-      element.classList.add('drag-over')
-    }
+      element.classList.add('drag-over');
+    };
 
-    const onDragLeave = (e:DragEvent) => {
+    const onDragLeave = (e: DragEvent) => {
       const element = e.target as HTMLElement;
-      element.classList.remove('drag-over')
-    }
+      element.classList.remove('drag-over');
+    };
 
     // provide tabProvider.state.name to each tab
     provide('tabsProvider', state);
 
     return {
       ...toRefs(state),
-      
+
       onDragStart,
       onDragEnter,
       onDragLeave,
@@ -138,7 +155,7 @@ export default defineComponent({
       setSelectedTab,
       getSelectedTab,
       tabBarNames,
-      onTabClick
+      onTabClick,
     };
   },
 });
@@ -158,7 +175,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   height: 100%;
-  width:100%;
+  width: 100%;
 }
 
 .tab {
@@ -171,17 +188,17 @@ export default defineComponent({
   padding-right: 5px;
   white-space: nowrap;
   height: 100%;
-  border-right:1px solid white;
+  border-right: 1px solid white;
 }
 
 .tab-active {
   background-color: white;
   color: rgb(51, 51, 51);
-  border-top:2px solid #00b1fb;
+  border-top: 2px solid #00b1fb;
 }
 
 .tab-icon-left {
-  color: rgb(92, 187, 92)
+  color: rgb(92, 187, 92);
 }
 
 .tab > .tab-icon-right {
@@ -203,6 +220,6 @@ export default defineComponent({
 }
 
 .drag-over {
-  background-color:#add8e691;
+  background-color: #add8e691;
 }
 </style>
