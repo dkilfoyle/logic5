@@ -9,9 +9,8 @@
       >
         <q-tab name="mails" icon="mail" @click="onTabClick('mails')" />
         <q-tab name="alarms" icon="alarm" @click="onTabClick('alarms')" />
+        <div class="col"></div>
         <q-tab name="movies" icon="movie" @click="onTabClick('movies')" />
-
-        // todo tab at bottom
       </q-tabs>
     </div>
     <div class="col">
@@ -88,5 +87,10 @@ export default defineComponent({
 
 .q-tab__icon {
   display: block;
+}
+
+.q-tabs--vertical .q-tabs__content {
+  display: flex !important;
+  flex-direction: column;
 }
 </style>

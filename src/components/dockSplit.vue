@@ -11,7 +11,15 @@
     <template #before>
       <div v-show="showCollapseBar('a')" style="height: 100%">
         <slot name="a_collapsed">
-          <div class="collapseBar"></div>
+          <div class="collapseBar">
+            <q-btn
+              @click="expandPane('a')"
+              icon="add"
+              flat
+              round
+              size="sm"
+            ></q-btn>
+          </div>
         </slot>
       </div>
       <div v-show="!showCollapseBar('a')" style="height: 100%">
@@ -172,5 +180,7 @@ export default defineComponent({
   background: #f3f3f3;
   color: #65666e;
   height: 100%;
+  display: fex;
+  flex-direction: column;
 }
 </style>
