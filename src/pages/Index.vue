@@ -3,15 +3,19 @@
     <div class="row items-stretch" style="flex: 1">
       <div class="col">
         <dock-split name="d0" :default-size="20" min-size="48px">
-          <template v-slot:a="splitprops">
+          <template v-slot:a="splitprops_d0a">
             <dock-sidebar
-              @collapse="splitprops.collapsePane('a')"
+              @toggle="splitprops_d0a.togglePane('a')"
+              @expand="splitprops_d0a.expandPane('ifCollapsed')"
             ></dock-sidebar>
           </template>
           <template v-slot:b>
             <dock-split name="d1" min-size="48px" collapse-bar>
-              <template v-slot:a>
-                <dock-tabs name="middleTop">
+              <template v-slot:a="splitprops_d1a">
+                <dock-tabs
+                  name="middleTop"
+                  @collapse="splitprops_d1a.collapsePane('a')"
+                >
                   <dock-panel name="yello" icon="window" isSelected
                     ><div class="mypanel">
                       <h2>My yellow panel</h2>
@@ -24,8 +28,11 @@
                   >
                 </dock-tabs>
               </template>
-              <template v-slot:b>
-                <dock-tabs name="rightTop">
+              <template v-slot:b="splitprops_d1b">
+                <dock-tabs
+                  name="rightTop"
+                  @collapse="splitprops_d1b.collapsePane('b')"
+                >
                   <dock-panel name="red" icon="window" isSelected
                     ><div class="mypanel">
                       <h2>My red panel</h2>

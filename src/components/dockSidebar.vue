@@ -10,6 +10,8 @@
         <q-tab name="mails" icon="mail" @click="onTabClick('mails')" />
         <q-tab name="alarms" icon="alarm" @click="onTabClick('alarms')" />
         <q-tab name="movies" icon="movie" @click="onTabClick('movies')" />
+
+        // todo tab at bottom
       </q-tabs>
     </div>
     <div class="col">
@@ -38,7 +40,7 @@ export default defineComponent({
     const selectedTab = ref('mails');
 
     const onTabClick = (x: string) => {
-      if (x == selectedTab.value) emit('collapse');
+      if (x == selectedTab.value) emit('toggle');
       else emit('expand');
     };
 
@@ -47,7 +49,7 @@ export default defineComponent({
       onTabClick,
     };
   },
-  emits: ['collapse', 'expand'],
+  emits: ['collapse', 'expand', 'toggle'],
 });
 </script>
 

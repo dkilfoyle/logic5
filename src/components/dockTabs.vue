@@ -33,6 +33,16 @@
           class="q-ml-sm tab-icon-right"
         ></q-icon>
       </div>
+      <div class="col"></div>
+      <q-btn
+        class="col-auto q-mr-sm"
+        flat
+        round
+        color="primary"
+        @click="onCollapseClick"
+        icon="close"
+        size="xs"
+      ></q-btn>
     </div>
     <div class="tab-panels" :id="name">
       <slot />
@@ -60,7 +70,7 @@ export default defineComponent({
 
   emits: ['changed', 'clicked', 'collapse'],
 
-  setup(props) {
+  setup(props, { emit }) {
     const state = reactive({
       name: props.name,
     });
@@ -139,6 +149,10 @@ export default defineComponent({
       element.classList.remove('drag-over');
     };
 
+    const onCollapseClick = () => {
+      emit('collapse');
+    };
+
     // provide tabProvider.state.name to each tab
     provide('tabsProvider', state);
 
@@ -155,7 +169,9 @@ export default defineComponent({
       setSelectedTab,
       getSelectedTab,
       tabBarNames,
+
       onTabClick,
+      onCollapseClick,
     };
   },
 });
