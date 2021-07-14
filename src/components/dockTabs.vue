@@ -33,7 +33,7 @@
           class="q-ml-sm tab-icon-right"
         ></q-icon>
       </div>
-      <div class="col"></div>
+      <div :id="name + '_drop-zone'" class="col drop-zone"></div>
       <q-btn
         class="col-auto q-mr-sm"
         flat
@@ -82,6 +82,7 @@ export default defineComponent({
       setSelectedTab,
       getSelectedTab,
       tabBarNames,
+      getState,
     } = useDockTabs();
 
     const onTabClick = (tabName: string) => {
@@ -93,13 +94,13 @@ export default defineComponent({
         e.dataTransfer?.getData('dropData') || ''
       ) as DropData;
       const target = e.target as HTMLElement;
-      console.log('dropping onto: ', target.id, target.className);
+      console.log('dropping onto: ', target, target.id, target.className);
 
       // addedIndex depends on whether drop target was tabs contained or existing tab
       let addedIndex: number;
-      if (target.classList.contains('tabs')) {
-        // dropped onto tabs
-        addedIndex = getTabs(target.id.replace('_tabs', '')).length;
+      if (target.classList.contains('drop-zone')) {
+        // dropped onto tabs drop zone
+        addedIndex = getTabs(target.id.replace('_drop-zone', '')).length;
       } else if (target.classList.contains('tab')) {
         const parent = target.parentElement;
         if (!(parent && parent.className == 'tabs'))
@@ -123,6 +124,8 @@ export default defineComponent({
 
       target.classList.remove('drag-over');
       setSelectedTab(state.name, dropData.tabName);
+
+      console.log(getState());
     };
 
     const onDragStart = (e: DragEvent, tabName: string, index: number) => {
