@@ -44,7 +44,7 @@
         size="xs"
       ></q-btn>
     </div>
-    <div class="tab-panels" :id="name">
+    <div class="tab-panels" :id="name" v-show="!splitprops.collapsed">
       <slot />
     </div>
   </div>
@@ -76,6 +76,7 @@ export default defineComponent({
     splitprops: {
       type: Object as PropType<{
         collapsePane: (pane: string) => void;
+        togglePane: (pane: string) => void;
         pane: string;
         horizontal: boolean;
         collapsed: boolean;
@@ -84,9 +85,7 @@ export default defineComponent({
     },
   },
 
-  emits: ['changed', 'clicked', 'collapse'],
-
-  setup(props, { emit }) {
+  setup(props) {
     const state = reactive({
       ...toRefs(props),
       name: props.name,
@@ -141,8 +140,6 @@ export default defineComponent({
 
       target.classList.remove('drag-over');
       setSelectedTab(state.name, dropData.tabName);
-
-      console.log(getState());
     };
 
     const onDragStart = (e: DragEvent, tabName: string, index: number) => {
@@ -170,7 +167,7 @@ export default defineComponent({
     };
 
     const onCollapseClick = () => {
-      props.splitprops.collapsePane(props.splitprops.pane);
+      props.splitprops.togglePane(props.splitprops.pane);
       // emit('collapse');
     };
 

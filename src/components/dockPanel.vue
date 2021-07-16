@@ -1,8 +1,9 @@
 <template>
   <teleport :to="teleportTarget" v-if="isMounted">
     <div v-show="isSelectedTab(name)" class="tab-panel tab-panel-active">
-      <slot /></div
-  ></teleport>
+      <slot />
+    </div>
+  </teleport>
 </template>
 
 <script>
