@@ -10,12 +10,9 @@
             ></dock-sidebar>
           </template>
           <template v-slot:b>
-            <dock-split name="d1" min-size="30px" collapse-bar>
+            <dock-split name="d1" collapse-bar>
               <template v-slot:a="splitprops_d1a">
-                <dock-tabs
-                  name="middleTop"
-                  @collapse="splitprops_d1a.collapsePane('a')"
-                >
+                <dock-tabs name="middleTop" :splitprops="splitprops_d1a">
                   <dock-panel
                     name="yellow"
                     label="Yellow"
@@ -33,12 +30,9 @@
                 </dock-tabs>
               </template>
               <template v-slot:b>
-                <dock-split name="d2" min-size="30px" collapse-bar horizontal>
+                <dock-split name="d2" collapse-bar horizontal>
                   <template v-slot:a="splitprops_d2a">
-                    <dock-tabs
-                      name="rightTop"
-                      @collapse="splitprops_d2a.collapsePane('a')"
-                    >
+                    <dock-tabs name="rightTop" :splitprops="splitprops_d2a">
                       <dock-panel
                         name="table"
                         label="Table"
@@ -51,10 +45,7 @@
                     </dock-tabs>
                   </template>
                   <template v-slot:b="splitprops_d2b">
-                    <dock-tabs
-                      name="rightBottom"
-                      @collapse="splitprops_d2b.collapsePane('b')"
-                    >
+                    <dock-tabs name="rightBottom" :splitprops="splitprops_d2b">
                       <dock-panel
                         name="graphs"
                         label="Graphs"

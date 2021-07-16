@@ -2,7 +2,7 @@
   <q-splitter
     v-model="size"
     emit-immediately
-    :horiztonal="direction == 'horizontal'"
+    :horizontal="horizontal"
     :limits="limits"
     unit="%"
     style="height: 100%"
@@ -11,7 +11,7 @@
     <template #before>
       <div v-show="showCollapseBar('a')" style="height: 100%">
         <slot name="a_collapsed">
-          <div class="collapseBar">
+          <div class="collapsebar">
             <q-btn
               @click="expandPane('a')"
               icon="add"
@@ -28,6 +28,9 @@
           :collapsePane="collapsePane"
           :expandPane="expandPane"
           :togglePane="togglePane"
+          pane="a"
+          :horizontal="horizontal"
+          :collapsed="isCollapsed('a')"
         ></slot>
       </div>
     </template>
@@ -46,7 +49,15 @@
         </slot>
       </div>
       <div v-show="!showCollapseBar('b')" style="height: 100%">
-        <slot name="b" :collapsePane="collapsePane"></slot>
+        <slot
+          name="b"
+          :collapsePane="collapsePane"
+          :expandPane="expandPane"
+          :togglePane="togglePane"
+          pane="b"
+          :horizontal="horizontal"
+          :collapsed="isCollapsed('b')"
+        ></slot>
       </div>
     </template>
   </q-splitter>
@@ -61,9 +72,9 @@ export default defineComponent({
       required: true,
       type: String,
     },
-    direction: {
-      type: String,
-      default: 'vertical',
+    horizontal: {
+      type: Boolean,
+      default: false,
     },
     defaultSize: {
       type: Number,
@@ -71,7 +82,7 @@ export default defineComponent({
     },
     minSize: {
       type: String,
-      default: '0%',
+      default: 'default',
     },
     collapsed: {
       type: Array,
@@ -82,6 +93,9 @@ export default defineComponent({
       default: false,
     },
   },
+
+  // chevron_right expand_more expand_less unfold_more unfold_less settings folder
+  // account_tree show_chart
 
   setup(props) {
     const state = reactive({
@@ -101,8 +115,10 @@ export default defineComponent({
     const minSizePercent = computed(() => {
       if (state.minSize.includes('%'))
         return parseInt(state.minSize.replace('%', ''));
-      const pixels = parseInt(state.minSize.replace('px', ''));
-      return state.direction == 'vertical'
+      let pixels;
+      if (state.minSize == 'default') pixels = state.horizontal ? 35 : 32;
+      else pixels = parseInt(state.minSize.replace('px', ''));
+      return !state.horizontal
         ? (pixels / state.clientWidth) * 100
         : (pixels / state.clientHeight) * 100;
     });
@@ -112,7 +128,8 @@ export default defineComponent({
       else return state.size >= limits.value[1];
     };
 
-    const showCollapseBar = (x: string) => isCollapsed(x) && state.collapseBar;
+    const showCollapseBar = (x: string) =>
+      isCollapsed(x) && state.collapseBar && !state.horizontal;
 
     const collapsePane = (x: string) => {
       state.oldSize = state.size;
@@ -184,13 +201,13 @@ export default defineComponent({
   bottom: -4px;
   width: 100%;
 }
-.collapseBar {
+.collapsebar {
   background: #f3f3f3;
   color: #65666e;
-  height: 100%;
   display: flex;
+  overflow: hidden;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
+  height: 100%;
 }
 </style>

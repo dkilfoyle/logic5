@@ -40,7 +40,7 @@
         round
         color="primary"
         @click="onCollapseClick"
-        icon="close"
+        :icon="collapseIcon"
         size="xs"
       ></q-btn>
     </div>
@@ -51,7 +51,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, provide, toRefs } from 'vue';
+import {
+  defineComponent,
+  reactive,
+  provide,
+  toRefs,
+  PropType,
+  computed,
+} from 'vue';
 import useDockTabs, { DragDropAction } from '../composables/useDockTabs';
 
 interface DropData {
@@ -66,12 +73,22 @@ export default defineComponent({
       required: true,
       type: String,
     },
+    splitprops: {
+      type: Object as PropType<{
+        collapsePane: (pane: string) => void;
+        pane: string;
+        horizontal: boolean;
+        collapsed: boolean;
+      }>,
+      required: true,
+    },
   },
 
   emits: ['changed', 'clicked', 'collapse'],
 
   setup(props, { emit }) {
     const state = reactive({
+      ...toRefs(props),
       name: props.name,
     });
 
@@ -153,8 +170,20 @@ export default defineComponent({
     };
 
     const onCollapseClick = () => {
-      emit('collapse');
+      props.splitprops.collapsePane(props.splitprops.pane);
+      // emit('collapse');
     };
+
+    const collapseIcon = computed(() => {
+      console.log(state.splitprops);
+      if (state.splitprops?.horizontal)
+        if (state.splitprops?.collapsed)
+          return state.splitprops?.pane == 'a' ? 'expand_more' : 'expand_less';
+        else
+          return state.splitprops?.pane == 'a' ? 'expand_less' : 'expand_more';
+      else
+        return state.splitprops?.pane == 'a' ? 'chevron_left' : 'chevron_right';
+    });
 
     // provide tabProvider.state.name to each tab
     provide('tabsProvider', state);
@@ -175,6 +204,7 @@ export default defineComponent({
 
       onTabClick,
       onCollapseClick,
+      collapseIcon,
     };
   },
 });
@@ -188,6 +218,7 @@ export default defineComponent({
   background-color: #f3f3f3;
   height: 35px;
   font-size: 13px;
+  overflow: hidden;
 }
 
 .tab-container {
