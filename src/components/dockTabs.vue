@@ -7,6 +7,7 @@
       @dragover.prevent
       @dragenter.prevent="onDragEnter($event)"
       @dragleave.prevent="onDragLeave($event)"
+      @dragend.prevent="onDragEnd($event)"
     >
       <div
         v-for="(tab, i) in getTabs(name)"
@@ -58,6 +59,7 @@ import {
   toRefs,
   PropType,
   computed,
+  watch,
 } from 'vue';
 import useDockTabs, { DragDropAction } from '../composables/useDockTabs';
 
@@ -77,6 +79,7 @@ export default defineComponent({
       type: Object as PropType<{
         collapsePane: (pane: string) => void;
         togglePane: (pane: string) => void;
+        expandPane: (pane: string) => void;
         pane: string;
         horizontal: boolean;
         collapsed: boolean;
@@ -165,6 +168,14 @@ export default defineComponent({
       const element = e.target as HTMLElement;
       element.classList.remove('drag-over');
     };
+
+    const numTabs = computed(() => getTabs(state.name).length);
+
+    watch(numTabs, (newVal, oldVal) => {
+      if (newVal == 0) props.splitprops.collapsePane(props.splitprops.pane);
+      if (oldVal == 0 && newVal > 0)
+        props.splitprops.expandPane(props.splitprops.pane);
+    });
 
     const onCollapseClick = () => {
       props.splitprops.togglePane(props.splitprops.pane);
