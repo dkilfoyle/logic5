@@ -65,6 +65,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, reactive, computed, toRefs } from 'vue';
+import { gsap } from 'gsap';
 
 export default defineComponent({
   props: {
@@ -119,8 +120,8 @@ export default defineComponent({
       if (state.minSize == 'default') pixels = state.horizontal ? 35 : 32;
       else pixels = parseInt(state.minSize.replace('px', ''));
       return !state.horizontal
-        ? (pixels / state.clientWidth) * 100
-        : (pixels / state.clientHeight) * 100;
+        ? Math.round((pixels / state.clientWidth) * 10000) / 100
+        : Math.round((pixels / state.clientHeight) * 10000) / 100;
     });
 
     const isCollapsed = (x: string) => {
@@ -131,19 +132,22 @@ export default defineComponent({
     const showCollapseBar = (x: string) =>
       isCollapsed(x) && state.collapseBar && !state.horizontal;
 
+    const tweenSize = (newSize: number) =>
+      gsap.to(state, { size: newSize, duration: 0.5 });
+
     const collapsePane = (x: string) => {
       state.oldSize = state.size;
-      if (x == 'a') state.size = minSizePercent.value;
-      else state.size = 100 - minSizePercent.value;
+      if (x == 'a') tweenSize(minSizePercent.value);
+      else tweenSize(100 - minSizePercent.value);
     };
 
     const expandPane = (reason = 'always') => {
       console.log('expandPane: ', state.oldSize);
       if (reason == 'ifCollapsed' && (isCollapsed('a') || isCollapsed('b'))) {
-        state.size = state.oldSize;
+        tweenSize(state.oldSize);
         return;
       }
-      state.size = state.oldSize;
+      tweenSize(state.oldSize);
     };
 
     const togglePane = (x: string) => {

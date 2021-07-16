@@ -13,6 +13,7 @@
     "@quasar/extras": "^1.0.0",
     "@types/splitpanes": "^2.2.0",
     "core-js": "^3.6.5",
+    "gsap": "^3.7.1",
     "quasar": "^2.0.0",
     "splitpanes": "^3.0.4",
     "vue3-smooth-dnd": "0.0.2"

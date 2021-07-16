@@ -105,5 +105,6 @@ export default defineComponent({
 .mypanel {
   padding: 5px;
   height: 100%;
+  white-space: nowrap;
 }
 </style>
