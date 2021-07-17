@@ -10,13 +10,26 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
+    "@codemirror/autocomplete": "^0.18.8",
+    "@codemirror/basic-setup": "^0.18.2",
+    "@codemirror/closebrackets": "^0.18.0",
+    "@codemirror/commands": "^0.18.3",
+    "@codemirror/comment": "^0.18.1",
+    "@codemirror/fold": "^0.18.1",
+    "@codemirror/gutter": "^0.18.4",
+    "@codemirror/highlight": "^0.18.4",
+    "@codemirror/lang-javascript": "^0.18.0",
+    "@codemirror/language": "^0.18.2",
+    "@codemirror/lint": "^0.18.4",
+    "@codemirror/matchbrackets": "^0.18.0",
+    "@codemirror/search": "^0.18.4",
+    "@codemirror/state": "^0.18.7",
+    "@codemirror/text": "^0.18.1",
+    "@codemirror/view": "^0.18.19",
     "@quasar/extras": "^1.0.0",
-    "@types/splitpanes": "^2.2.0",
     "core-js": "^3.6.5",
     "gsap": "^3.7.1",
-    "quasar": "^2.0.0",
-    "splitpanes": "^3.0.4",
-    "vue3-smooth-dnd": "0.0.2"
+    "quasar": "^2.0.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",

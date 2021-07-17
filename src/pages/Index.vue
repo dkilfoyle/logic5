@@ -19,9 +19,8 @@
                     icon="window"
                     isSelected
                     ><div class="mypanel">
-                      <h4>My yellow panel</h4>
-                    </div></dock-panel
-                  >
+                      <editor></editor></div
+                  ></dock-panel>
                   <dock-panel name="purple" label="Purple" icon="window"
                     ><div class="mypanel">
                       <h4>My purple panel</h4>
@@ -77,10 +76,12 @@ import dockPanel from '../components/dockPanel.vue';
 import dockSplit from '../components/dockSplit.vue';
 import dockSidebar from '../components/dockSidebar.vue';
 
+import editor from '../components/editor.vue';
+
 export default defineComponent({
   name: 'PageIndex',
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  components: { dockTabs, dockPanel, dockSplit, dockSidebar },
+  components: { dockTabs, dockPanel, dockSplit, dockSidebar, editor },
   setup() {
     const leftTab = ref('mails');
 
