@@ -7,7 +7,6 @@
       @dragover.prevent
       @dragenter.prevent="onDragEnter($event)"
       @dragleave.prevent="onDragLeave($event)"
-      @dragend.prevent="onDragEnd($event)"
     >
       <div
         v-for="(tab, i) in getTabs(name)"
@@ -101,7 +100,7 @@ export default defineComponent({
       setSelectedTab,
       getSelectedTab,
       tabBarNames,
-      getState,
+      // getState,
     } = useDockTabs();
 
     const onTabClick = (tabName: string) => {

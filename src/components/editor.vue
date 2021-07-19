@@ -7,10 +7,11 @@
 </template>
 
 <script lang="ts">
-import { onMounted, ref, toRefs, watchEffect, reactive } from 'vue';
+import { onMounted, ref, toRefs, reactive, watch } from 'vue';
 
 import { EditorState, EditorView, basicSetup } from '@codemirror/basic-setup';
 import { javascript } from '@codemirror/lang-javascript';
+import useWindowResize from '../composables/useWindowResize';
 
 export default {
   // name: 'ComponentName',
@@ -18,6 +19,8 @@ export default {
     const state = reactive({
       wrapperHeight: 10,
     });
+
+    const { width, height } = useWindowResize();
 
     const wrapperRef = ref<HTMLElement>();
 
@@ -29,13 +32,18 @@ export default {
       extensions: [basicSetup, javascript()],
     });
     onMounted(() => {
-      debugger;
       state.wrapperHeight =
-        wrapperRef?.value?.parentElement?.clientHeight || 111;
+        (wrapperRef?.value?.parentElement?.clientHeight || 111) - 10;
       let view = new EditorView({
         state: startState,
         parent: document.getElementById('codemirror1') as Element,
       });
+      watch(
+        () => height.value,
+        (newHeight = 1, oldHeight = 1) => {
+          state.wrapperHeight += newHeight - oldHeight;
+        }
+      );
     });
 
     return {
