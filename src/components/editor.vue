@@ -2,7 +2,9 @@
   <div
     id="codemirror1"
     ref="wrapperRef"
-    :style="{ height: wrapperHeight + 'px' }"
+    :style="{
+      height: wrapperHeight + 'px',
+    }"
   ></div>
 </template>
 
@@ -24,8 +26,10 @@ export default {
 
     const wrapperRef = ref<HTMLElement>();
 
-    const onResize = (size: { height: number }) =>
-      (state.wrapperHeight = size.height);
+    const onResize = (size: { height: number }) => {
+      console.log(size);
+      state.wrapperHeight = size.height;
+    };
 
     let startState = EditorState.create({
       doc: 'Hello World',
@@ -56,7 +60,12 @@ export default {
 </script>
 
 <style>
+#codemirror1 {
+}
 .cm-editor {
   height: inherit;
+}
+.cm-scroller {
+  overflow: auto;
 }
 </style>

@@ -1,8 +1,10 @@
 <template>
   <teleport :to="teleportTarget" v-if="isMounted">
-    <div v-show="isSelectedTab(name)" class="tab-panel tab-panel-active">
-      <slot />
-    </div>
+    <transition name="fade">
+      <div v-show="isSelectedTab(name)" class="tab-panel tab-panel-active">
+        <slot />
+      </div>
+    </transition>
   </teleport>
 </template>
 
@@ -75,3 +77,15 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.fade-enter-active {
+  transition: opacity 0.3s ease-out;
+}
+.fade-enter-from {
+  opacity: 0;
+}
+.fade-enter-to {
+  opacity: 1;
+}
+</style>
