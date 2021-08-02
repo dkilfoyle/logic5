@@ -1,7 +1,7 @@
 <template>
-  <div class="tab-container">
+  <div class="tab-container column">
     <div
-      class="tabs"
+      class="tabs col-auto row"
       :id="name + '_tabs'"
       @drop="onDrop($event)"
       @dragover.prevent
@@ -16,6 +16,7 @@
         @dragstart="onDragStart($event, tab.name, i)"
         :class="[
           'tab',
+          'col-auto',
           tab.isDisabled ? 'tab-disabled' : '',
           tab.name == getSelectedTab(name) ? 'tab-active' : '',
         ]"
@@ -44,7 +45,8 @@
         size="xs"
       ></q-btn>
     </div>
-    <div class="tab-panels" :id="name" v-show="!splitprops.collapsed">
+    <div class="tab-panels col" :id="name" v-show="!splitprops.collapsed">
+      <q-resize-observer @resize="onTabPanelsResize"></q-resize-observer>
       <slot />
     </div>
   </div>
@@ -112,7 +114,7 @@ export default defineComponent({
         e.dataTransfer?.getData('dropData') || ''
       ) as DropData;
       const target = e.target as HTMLElement;
-      console.log('dropping onto: ', target, target.id, target.className);
+      // console.log('dropping onto: ', target, target.id, target.className);
 
       // addedIndex depends on whether drop target was tabs contained or existing tab
       let addedIndex: number;
@@ -132,16 +134,15 @@ export default defineComponent({
         return;
       }
 
-      const dragDropAction = {
+      const dragDropAction: DragDropAction = {
         sourceTabsId: dropData.tabsName,
         sourceTabIndex: dropData.index,
         targetTabsId: state.name,
         targetTabIndex: addedIndex,
-      } as DragDropAction;
-      doDragDrop(dragDropAction);
+      };
+      void doDragDrop(dragDropAction);
 
       target.classList.remove('drag-over');
-      setSelectedTab(state.name, dropData.tabName);
     };
 
     const onDragStart = (e: DragEvent, tabName: string, index: number) => {
@@ -155,7 +156,7 @@ export default defineComponent({
           JSON.stringify({ tabName, tabsName: state.name, index })
         );
       }
-      console.log('onStartDrag', tabName);
+      // console.log('onStartDrag', tabName);
     };
 
     const onDragEnter = (e: DragEvent) => {
@@ -182,7 +183,7 @@ export default defineComponent({
     };
 
     const collapseIcon = computed(() => {
-      console.log(state.splitprops);
+      // console.log(state.splitprops);
       if (state.splitprops?.horizontal)
         if (state.splitprops?.collapsed)
           return state.splitprops?.pane == 'a' ? 'expand_more' : 'expand_less';
@@ -191,6 +192,10 @@ export default defineComponent({
       else
         return state.splitprops?.pane == 'a' ? 'chevron_left' : 'chevron_right';
     });
+
+    const onTabPanelsResize = (size: { width: number; height: number }) => {
+      console.log('Resizing ', props.name, size);
+    };
 
     // provide tabProvider.state.name to each tab
     provide('tabsProvider', state);
@@ -212,27 +217,29 @@ export default defineComponent({
       onTabClick,
       onCollapseClick,
       collapseIcon,
+
+      onTabPanelsResize,
     };
   },
 });
 </script>
 
 <style>
-.tabs {
-  display: flex !important;
-  flex-direction: row;
-  flex-shrink: 0;
-  background-color: #f3f3f3;
-  height: 35px;
-  font-size: 13px;
+.tab-container {
+  /* display: flex;
+  flex-direction: column; */
+  height: 100%;
+  width: 100%;
   overflow: hidden;
 }
 
-.tab-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
+.tabs {
+  /* display: flex !important;
+  flex-direction: row;
+  flex-shrink: 0; */
+  background-color: #f3f3f3;
+  height: 35px !important;
+  font-size: 13px;
   overflow: hidden;
 }
 
@@ -267,17 +274,12 @@ export default defineComponent({
   color: black;
 }
 
-.tab-panels {
-  background-color: white;
-  color: rgb(51, 51, 51);
-  flex-grow: 1;
-}
-
-.tab-panel {
-  height: 100%;
-}
-
 .drag-over {
   background-color: #add8e691;
+}
+
+.tab-panels {
+  /* width: 100%;
+  height: 100%; */
 }
 </style>

@@ -4,7 +4,7 @@
     emit-immediately
     :horizontal="horizontal"
     :limits="limits"
-    unit="%"
+    unit="px"
     style="height: 100%"
   >
     <q-resize-observer @resize="onResize"></q-resize-observer>
@@ -34,6 +34,7 @@
         ></slot>
       </div>
     </template>
+
     <template #after>
       <div v-show="showCollapseBar('b')" style="height: 100%">
         <slot name="b_collapsed">
@@ -79,7 +80,7 @@ export default defineComponent({
     },
     defaultSize: {
       type: Number,
-      default: 50,
+      default: 500,
     },
     minSize: {
       type: String,
@@ -93,6 +94,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    unit: {
+      type: String,
+      default: 'px',
+    },
   },
 
   // chevron_right expand_more expand_less unfold_more unfold_less settings folder
@@ -103,9 +108,9 @@ export default defineComponent({
       ...toRefs(props),
       size: ref(props.defaultSize),
       oldSize: ref(props.defaultSize),
-      minSizePercent: ref(0),
-      clientWidth: ref(10000),
-      clientHeight: ref(10000),
+      minSizePercent: 0,
+      clientWidth: 10000,
+      clientHeight: 10000,
     });
 
     const onResize = (size: { width: number; height: number }) => {
@@ -122,6 +127,22 @@ export default defineComponent({
       return !state.horizontal
         ? Math.round((pixels / state.clientWidth) * 10000) / 100
         : Math.round((pixels / state.clientHeight) * 10000) / 100;
+    });
+
+    const minSizePixels = computed(() => {
+      if (state.minSize == 'default') return state.horizontal ? 35 : 32;
+      if (state.minSize.includes('px'))
+        return parseInt(state.minSize.replace('px', ''));
+      let percent = parseInt(state.minSize.replace('%', ''));
+      return !state.horizontal
+        ? Math.round(percent * state.clientWidth * 10000) / 100
+        : Math.round(percent * state.clientHeight * 10000) / 100;
+    });
+
+    const limits = computed(() => {
+      return state.unit == '%'
+        ? [minSizePercent.value, 100 - minSizePercent.value]
+        : [minSizePixels.value, Infinity];
     });
 
     const isCollapsed = (x: string) => {
@@ -154,11 +175,6 @@ export default defineComponent({
       if (isCollapsed(x)) expandPane();
       else collapsePane(x);
     };
-
-    const limits = computed(() => [
-      minSizePercent.value,
-      100 - minSizePercent.value,
-    ]);
 
     return {
       ...toRefs(state),

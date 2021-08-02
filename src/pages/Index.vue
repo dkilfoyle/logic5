@@ -2,7 +2,7 @@
   <q-page class="column">
     <div class="row items-stretch" style="flex: 1">
       <div class="col">
-        <dock-split name="d0" :default-size="20" min-size="48px">
+        <dock-split name="d0" :default-size="400" min-size="48px">
           <template v-slot:a="splitprops_d0a">
             <dock-sidebar
               @toggle="splitprops_d0a.togglePane('a')"
@@ -18,9 +18,9 @@
                     label="Yellow"
                     icon="window"
                     isSelected
-                    ><div class="mypanel">
-                      <editor></editor></div
-                  ></dock-panel>
+                  >
+                    <editor></editor>
+                  </dock-panel>
                   <dock-panel name="purple" label="Purple" icon="window"
                     ><div class="mypanel">
                       <h4>My purple panel</h4>
@@ -105,7 +105,7 @@ export default defineComponent({
 }
 .mypanel {
   padding: 5px;
-  height: 100%;
+  height: inherit;
   white-space: nowrap;
 }
 </style>

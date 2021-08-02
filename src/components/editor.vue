@@ -1,11 +1,5 @@
 <template>
-  <div
-    id="codemirror1"
-    ref="wrapperRef"
-    :style="{
-      height: wrapperHeight + 'px',
-    }"
-  ></div>
+  <div id="codemirror1" ref="wrapperRef"></div>
 </template>
 
 <script lang="ts">
@@ -22,7 +16,7 @@ export default {
       wrapperHeight: 10,
     });
 
-    const { width, height } = useWindowResize();
+    const { height } = useWindowResize();
 
     const wrapperRef = ref<HTMLElement>();
 
@@ -38,7 +32,7 @@ export default {
     onMounted(() => {
       state.wrapperHeight =
         (wrapperRef?.value?.parentElement?.clientHeight || 111) - 10;
-      let view = new EditorView({
+      new EditorView({
         state: startState,
         parent: document.getElementById('codemirror1') as Element,
       });
@@ -61,6 +55,7 @@ export default {
 
 <style>
 #codemirror1 {
+  height: inherit;
 }
 .cm-editor {
   height: inherit;

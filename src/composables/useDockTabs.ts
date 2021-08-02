@@ -1,4 +1,4 @@
-import { reactive, computed } from 'vue';
+import { reactive, computed, nextTick } from 'vue';
 
 export interface TabInterface {
   name: string;
@@ -54,10 +54,10 @@ export default () => {
     state.tabBars[tabBarId].selected;
 
   const isSelectedTab = (tabId: string): boolean => {
-    return getSelectedTab(getTabBarId(tabId)) == tabId;
+    return getSelectedTab(getTabBarIdForTab(tabId)) == tabId;
   };
 
-  const getTabBarId = (tabId: string): string => {
+  const getTabBarIdForTab = (tabId: string): string => {
     for (const tabBarId of tabBarNames.value) {
       if (state.tabBars[tabBarId].tabs.some((x) => x.name == tabId))
         return tabBarId;
@@ -65,12 +65,20 @@ export default () => {
     return '';
   };
 
-  const doDragDrop = (dropResult: DragDropAction): void => {
+  const doDragDrop = async (dropResult: DragDropAction): Promise<void> => {
     const { sourceTabsId, sourceTabIndex, targetTabsId, targetTabIndex } =
       dropResult;
-    console.log('doDragDrop: ', dropResult);
+    
+      console.log('doDragDrop: ', dropResult);
     const targetTabs = getTabs(targetTabsId);
     const sourceTabs = getTabs(sourceTabsId);
+
+    // this will unselect/hide the currently selected tab in targettabs
+    setSelectedTab(targetTabsId, sourceTabs[sourceTabIndex].name);
+    await nextTick(); // wait for the hide so that when teleported only 1 tab visible to calculate height
+
+    // move the tab object from sourceTabs to targetTabs array
+    // this will trigger the teleport
     const itemToAdd = sourceTabs.splice(sourceTabIndex, 1)[0];
     targetTabs.splice(targetTabIndex, 0, itemToAdd);
 
@@ -91,7 +99,7 @@ export default () => {
     setSelectedTab,
     getSelectedTab,
     isSelectedTab,
-    getTabBarId,
+    getTabBarIdForTab,
     doDragDrop,
     tabBarNames,
     getState,
